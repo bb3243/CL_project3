@@ -23,7 +23,6 @@ input.on('connection', (socket) => {
     socket.on('dataPosition', (data) => {
         //console.log("got data from input");
         //console.log(data);
-        //socket.emit("cubePosition", data)
         output.emit("cubePosition", data);
     });
 });

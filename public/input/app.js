@@ -1,5 +1,6 @@
 let socket = io('/input');
 
+//////////////////////////////////// PoseNet //////////////////////////////////// 
 //posenet variable
 let video;
 let poseNet;
@@ -33,7 +34,10 @@ function draw() {
     let eyeR = pose.rightEye;
     let eyeL = pose.leftEye;
     let d = dist(eyeR.x, eyeR.y, eyeL.x, eyeL.y);
+
+   //Fusion of the ball if the hand are too close to each other
     let handClose = pose.leftWrist.x - pose.rightWrist.x;
+
     if (handClose < 100){
       fill(255, 0, 255);
       let halfX = (pose.rightWrist.x + pose.leftWrist.x )/2
@@ -45,7 +49,7 @@ function draw() {
       ellipse(pose.leftWrist.x, pose.leftWrist.y, d);
     }
 
-    //draw the skeleton
+    //Draw the skeleton
     for (let i = 0; i < pose.keypoints.length; i++) {
       let x = pose.keypoints[i].position.x;
       let y = pose.keypoints[i].position.y;
@@ -61,15 +65,15 @@ function draw() {
       line(a.position.x, a.position.y, b.position.x, b.position.y);
     }
 
-    ///////////////////////////////////////////
-    //socket.io
+//////////////////////////////////// Socket.Io //////////////////////////////////// 
+
     let elementP = [];
     
     let eleLeftx = pose.keypoints[9].position.x;
     let eleLefty = pose.keypoints[9].position.y;
     let eleRightx = pose.keypoints[10].position.x;
     let eleRighty = pose.keypoints[10].position.y;
-
+    /*
     elementP = [{
       name : "left",
       x : eleLeftx,
@@ -83,25 +87,28 @@ function draw() {
     }];
 
     
-    console.log(elementP);
+    //console.log(elementP);
+    //console.log(d);
     socket.emit('dataPosition', elementP);
-
+    */
+   
     socket.on('connect', function() {
-      console.log('sending position to server');
+      //console.log('sending position to server');
             
       elementP = [{
         name : "left",
         x : eleLeftx,
         y : eleLefty,
-        z : 0
+        z : d
         },{
         name : "right",
         x : eleRightx,
         y : eleRighty,
-        z : 0
+        z : d
       }];
       socket.emit('dataPosition', elementP);
-      console.log(elementP);
+      //console.log(elementP);
+      //console.log(d);
     });       
   }
 }
